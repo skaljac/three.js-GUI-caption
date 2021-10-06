@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>three.js webgl - orbit controls</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<link type="text/css" rel="stylesheet" href="main.css">
+		<style>
+			body {
+				background-color: #ccc;
+				color: #000;
+			}
+
+			a {
+				color: #f00;
+			}
+		</style>
+		<link rel="stylesheet" href="test1.css" type="text/css" media="screen">
+	</head>
+
+	<body>
+	
+		<div id="HB_container">
+			<div id="HB_player" style="display:block;">
+				<h3 class="HB_name" id="HB_name">3D BOX</h3>
+			</div>
+		</div>	
+	
+		<script src="./lib/three.min.js"></script>
+		<script src="./lib/OrbitControls.js"></script>
+		<div id="info">
+			<a href="https://threejs.org" target="_blank" rel="noopener">three.js</a> - TEST 1
+		</div>
+
+		<script type="module">
+
+			let camera, controls, scene, renderer;
+			let box,text,textPos;
+			
+
+			init();
+			animate();
+
+			function init() {
+
+				scene = new THREE.Scene();
+				scene.background = new THREE.Color( 0xcccccc );
+
+				renderer = new THREE.WebGLRenderer( { antialias: true } );
+				renderer.setPixelRatio( window.devicePixelRatio );
+				renderer.setSize( window.innerWidth, window.innerHeight );
+				document.body.appendChild( renderer.domElement );
+
+				camera = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, 1, 1000 );
+				camera.position.set( 400, 200, 0 );
+
+				// controls
+				controls = new THREE.OrbitControls( camera, renderer.domElement );
+				controls.listenToKeyEvents( window ); 
+				controls.enableDamping = true;
+				controls.dampingFactor = 0.05;
+
+				controls.screenSpacePanning = false;
+
+				controls.minDistance = 100;
+				controls.maxDistance = 500;
+
+				controls.maxPolarAngle = Math.PI / 2;
+
+
+				// BOX
+				var texture = new THREE.TextureLoader().load( 'textures/crate.gif' );
+				var geometry = new THREE.BoxBufferGeometry(10, 10, 10 );
+				var material = new THREE.MeshBasicMaterial( { map: texture } );
+				box = new THREE.Mesh( geometry, material );
+				box.position.set(0,0,50);
+				scene.add( box );
+
+				// GUI text
+				text = document.getElementById("HB_player");
+				textPos = new THREE.Vector3(0,0,0);
+				
+
+				// lights
+				const dirLight1 = new THREE.DirectionalLight( 0xffffff );
+				dirLight1.position.set( 1, 1, 1 );
+				scene.add( dirLight1 );
+
+				
+				window.addEventListener( 'resize', onWindowResize );
+				
+			}
+
+			function onWindowResize() {
+
+				camera.aspect = window.innerWidth / window.innerHeight;
+				camera.updateProjectionMatrix();
+
+				renderer.setSize( window.innerWidth, window.innerHeight );
+
+			}
+			
+			// Place GUI text over 3D object
+			function updateGUIText(object)
+			{
+				var vector = new THREE.Vector3(0, 0, 0);
+				const canvas = renderer.domElement;
+				
+				vector.copy(object.position);
+				vector.y += 1.0;
+
+				vector.project(camera);
+
+				vector.x = Math.round((0.5 + vector.x / 2) * (canvas.width / renderer.getPixelRatio()));
+				vector.y = Math.round((0.5 + vector.y / 2) * (canvas.height / renderer.getPixelRatio()));
+				vector.z = 0;
+
+				// We need textPos vector so that we can smooth out movment of GUI text
+				textPos.lerp(vector,0.5);
+			
+				text.style.bottom = textPos.y + "px";
+				text.style.left = textPos.x + "px";
+			}
+
+			function animate() {
+
+				requestAnimationFrame( animate );
+				
+				updateGUIText(box);
+
+				controls.update();
+
+				render();
+
+			}
+
+			function render() {
+
+				renderer.render( scene, camera );
+
+			}
+
+		</script>
+
+	</body>
+</html>

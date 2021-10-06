@@ -1,0 +1,40 @@
+
+/* HEALTH BAR */
+*:not(input) {
+    /*cursor: pointer;*/
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+ 
+ 
+#HB_player {
+    display: inline-block;
+    margin: 5px;
+    
+	width: 50px;
+ 
+    image-rendering: pixelated;
+    image-rendering: -webkit-optimize-contrast;
+    position: absolute;
+    bottom: 20%;
+    left: 40%;
+	-ms-transform: translate(-50%, 0%);  
+	transform: translate(-50%, 0%);    
+}
+ 
+#HB_player .HB_name {
+    text-align: center;
+    width: 200%;
+    position: absolute;
+    font-family: Arial, sans-serif;
+    font-weight: bold;
+
+    top: -50px;
+    left: -50%;
+    font-size: initial;
+    font-size: 90%;
+    
+}
